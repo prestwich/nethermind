@@ -60,13 +60,10 @@ jobs:
       if: matrix.os == 'macOS-latest'
       run: |
         cd mcl/
-        mkdir build
-        cd build
-        cmake ..
-        make
+        make -j4
     - uses: actions/upload-artifact@v1
       name: Uploading Darwin artifact
       if: matrix.os == 'macOS-latest'
       with:
         name: darwin_artifact
-        path: mcl/build/lib/libmclbn256.dylib
+        path: mcl/lib/libmclbn256.dylib
