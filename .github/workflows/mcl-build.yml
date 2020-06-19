@@ -1,9 +1,9 @@
 name: MCL Build
 
-on:
-  repository_dispatch:
-    types: mcl_build
-
+# on:
+#   repository_dispatch:
+#     types: mcl_build
+on: push
 jobs:
   mcl-building:
     name: Building mcl
@@ -43,24 +43,30 @@ jobs:
       if: matrix.os == 'ubuntu-latest'
       run: |
         cd mcl/
-        make -j4
+        mkdir build
+        cd build
+        cmake ..
+        make
     - name: Stripping Linux file
       if: matrix.os == 'ubuntu-latest'
-      run: strip /home/runner/work/nethermind/nethermind/mcl/lib/libmclbn384_256.so
+      run: strip /home/runner/work/nethermind/nethermind/mcl/build/lib/libmclbn256.so
     - uses: actions/upload-artifact@v1
       name: Uploading Linux artifact
       if: matrix.os == 'ubuntu-latest'
       with:
         name: linux_artifact
-        path: mcl/lib/libmclbn256.so
+        path: mcl/build/lib/libmclbn256.so
     - name: Building MCL for OSX
       if: matrix.os == 'macOS-latest'
       run: |
         cd mcl/
-        make -j4
+        mkdir build
+        cd build
+        cmake ..
+        make
     - uses: actions/upload-artifact@v1
       name: Uploading Darwin artifact
       if: matrix.os == 'macOS-latest'
       with:
         name: darwin_artifact
-        path: mcl/lib/libmclbn256.dylib
+        path: mcl/build/lib/libmclbn256.dylib
