@@ -18,18 +18,19 @@ namespace Nethermind.Evm
 {
     public static class GasCostOf
     {
+        public const long Eip = 2500; 
         public const long Base = 2;
         public const long VeryLow = 3;
         public const long Low = 5;
         public const long Mid = 8;
         public const long High = 10;
         public const long ExtCode = 20;
-        public const long ExtCodeEip150 = 700;
+        public const long ExtCodeEip150 = Eip;
         public const long ExtCodeSize = 20;
-        public const long ExtCodeSizeEip150 = 700;
+        public const long ExtCodeSizeEip150 = Eip;
         public const long Balance = 20;
         public const long BalanceEip150 = 400;
-        public const long BalanceEip1884 = 700;
+        public const long BalanceEip1884 = Eip;
         public const long SLoad = 50;
         public const long SLoadEip150 = 200;
         public const long SLoadEip1884 = 800;
@@ -41,7 +42,7 @@ namespace Nethermind.Evm
         public const long Create = 32000;
         public const long CodeDeposit = 200;
         public const long Call = 40;
-        public const long CallEip150 = 700;
+        public const long CallEip150 = Eip;
         public const long CallValue = 9000;
         public const long CallStipend = 2300;
         public const long NewAccount = 25000;
@@ -63,7 +64,7 @@ namespace Nethermind.Evm
         public const long SelfDestruct = 0;
         public const long SelfDestructEip150 = 5000;
         public const long ExtCodeHash = 400;
-        public const long ExtCodeHashEip1884 = 700;
+        public const long ExtCodeHashEip1884 = Eip;
         public const long SelfBalance = 5;
     }
 }
