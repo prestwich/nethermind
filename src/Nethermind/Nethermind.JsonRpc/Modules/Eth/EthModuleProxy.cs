@@ -158,6 +158,11 @@ namespace Nethermind.JsonRpc.Modules.Eth
             throw new NotImplementedException();
         }
 
+        public ResultWrapper<string> eth_calls(string code, long gasLimit, BlockParameter blockParameter = null)
+        {
+            throw new NotImplementedException();
+        }
+
 
         public ResultWrapper<string> eth_calls(long gasLimit, BlockParameter blockParameter = null)
         {

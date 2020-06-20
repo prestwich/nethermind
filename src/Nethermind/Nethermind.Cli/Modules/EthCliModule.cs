@@ -57,7 +57,7 @@ namespace Nethermind.Cli.Modules
         }
         
         [CliFunction("eth", "calls")]
-        public string Calls(long gasLimit, string blockParameter = null)
+        public string Calls(string code, long gasLimit, string blockParameter = null)
         {
             return NodeManager.Post<string>("eth_calls", gasLimit, blockParameter ?? "latest").Result;
         }

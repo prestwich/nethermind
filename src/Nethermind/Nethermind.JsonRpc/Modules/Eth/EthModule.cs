@@ -346,8 +346,8 @@ namespace Nethermind.JsonRpc.Modules.Eth
 
             return result.Error != null ? ResultWrapper<string>.Fail("VM execution error.", ErrorCodes.ExecutionError, result.Error) : ResultWrapper<string>.Success(result.OutputData.ToHexString(true));
         }
-        
-        public ResultWrapper<string> eth_calls(long gasLimit, BlockParameter blockParameter = null)
+
+        public ResultWrapper<string> eth_calls(string code, long gasLimit, BlockParameter blockParameter = null)
         {
             SearchResult<BlockHeader> searchResult = _blockchainBridge.SearchForHeader(blockParameter);
             if (searchResult.IsError)
@@ -366,19 +366,7 @@ namespace Nethermind.JsonRpc.Modules.Eth
             tx.SenderAddress = Address.SystemUser;
             tx.GasLimit = gasLimit;
             tx.GasPrice = 0;
-            tx.Init = Prepare.EvmCode
-                .Op(Instruction.JUMPDEST)
-                .PushData(32)
-                .PushData(0)
-                .Op(Instruction.SHA3)
-                .Op(Instruction.DUP1)
-                .PushData(0)
-                .Op(Instruction.MSTORE)
-                .Op(Instruction.BALANCE)
-                .Op(Instruction.POP)
-                .PushData(0)
-                .Op(Instruction.JUMP)
-                .Done;
+            tx.Init = Bytes.FromHexString(code);
 
             BlockchainBridge.CallOutput result = _blockchainBridge.Call(header, tx);
 
