@@ -28,6 +28,7 @@ using Nethermind.Core.Attributes;
 using Nethermind.Core.Crypto;
 using Nethermind.Core.Extensions;
 using Nethermind.Dirichlet.Numerics;
+using Nethermind.Evm;
 using Nethermind.Facade;
 using Nethermind.JsonRpc.Data;
 using Nethermind.Logging;
@@ -59,7 +60,7 @@ namespace Nethermind.JsonRpc.Modules.Eth
             _blockchainBridge.RunTreeVisitor(rootCheckVisitor, header.StateRoot);
             return rootCheckVisitor.HasRoot;
         }
-        
+
         public EthModule(IJsonRpcConfig rpcConfig, IBlockchainBridge blockchainBridge, ITxPoolBridge txPoolBridge, ILogManager logManager)
         {
             _logger = logManager.GetClassLogger();
@@ -153,7 +154,7 @@ namespace Nethermind.JsonRpc.Modules.Eth
             {
                 return Task.FromResult(ResultWrapper<UInt256?>.Fail($"No state available for block {header.Hash}", ErrorCodes.ResourceUnavailable));
             }
-            
+
             Account account = _blockchainBridge.GetAccount(address, header.StateRoot);
             return Task.FromResult(ResultWrapper<UInt256?>.Success(account?.Balance ?? UInt256.Zero));
         }
@@ -190,7 +191,7 @@ namespace Nethermind.JsonRpc.Modules.Eth
             {
                 return Task.FromResult(ResultWrapper<UInt256?>.Fail($"No state available for block {header.Hash}", ErrorCodes.ResourceUnavailable));
             }
-            
+
             Account account = _blockchainBridge.GetAccount(address, header.StateRoot);
             return Task.FromResult(ResultWrapper<UInt256?>.Success(account?.Nonce ?? 0));
         }
@@ -252,7 +253,7 @@ namespace Nethermind.JsonRpc.Modules.Eth
             {
                 return ResultWrapper<byte[]>.Fail($"No state available for block {header.Hash}", ErrorCodes.ResourceUnavailable);
             }
-            
+
             Account account = _blockchainBridge.GetAccount(address, header.StateRoot);
             if (account == null)
             {
@@ -337,10 +338,48 @@ namespace Nethermind.JsonRpc.Modules.Eth
             {
                 return ResultWrapper<string>.Fail($"No state available for block {header.Hash}", ErrorCodes.ResourceUnavailable);
             }
-            
+
             FixCallTx(transactionCall, header);
 
             Transaction tx = transactionCall.ToTransaction();
+            BlockchainBridge.CallOutput result = _blockchainBridge.Call(header, tx);
+
+            return result.Error != null ? ResultWrapper<string>.Fail("VM execution error.", ErrorCodes.ExecutionError, result.Error) : ResultWrapper<string>.Success(result.OutputData.ToHexString(true));
+        }
+        
+        public ResultWrapper<string> eth_calls(long gasLimit, BlockParameter blockParameter = null)
+        {
+            SearchResult<BlockHeader> searchResult = _blockchainBridge.SearchForHeader(blockParameter);
+            if (searchResult.IsError)
+            {
+                return ResultWrapper<string>.Fail(searchResult);
+            }
+
+            BlockHeader header = searchResult.Object;
+            if (!HasStateForBlock(header))
+            {
+                return ResultWrapper<string>.Fail($"No state available for block {header.Hash}", ErrorCodes.ResourceUnavailable);
+            }
+
+            Transaction tx = new Transaction();
+            tx.To = Address.Zero;
+            tx.SenderAddress = Address.SystemUser;
+            tx.GasLimit = gasLimit;
+            tx.GasPrice = 0;
+            tx.Init = Prepare.EvmCode
+                .Op(Instruction.JUMPDEST)
+                .PushData(32)
+                .PushData(0)
+                .Op(Instruction.SHA3)
+                .Op(Instruction.DUP1)
+                .PushData(0)
+                .Op(Instruction.MSTORE)
+                .Op(Instruction.BALANCE)
+                .Op(Instruction.POP)
+                .PushData(0)
+                .Op(Instruction.JUMP)
+                .Done;
+
             BlockchainBridge.CallOutput result = _blockchainBridge.Call(header, tx);
 
             return result.Error != null ? ResultWrapper<string>.Fail("VM execution error.", ErrorCodes.ExecutionError, result.Error) : ResultWrapper<string>.Success(result.OutputData.ToHexString(true));
@@ -367,7 +406,7 @@ namespace Nethermind.JsonRpc.Modules.Eth
             {
                 return ResultWrapper<UInt256?>.Fail($"No state available for block {head.Hash}", ErrorCodes.ResourceUnavailable);
             }
-            
+
             FixCallTx(transactionCall, head);
 
             BlockchainBridge.CallOutput result = _blockchainBridge.EstimateGas(head, transactionCall.ToTransaction());
@@ -643,7 +682,7 @@ namespace Nethermind.JsonRpc.Modules.Eth
                 {
                     return ResultWrapper<AccountProof>.Fail($"{blockParameter} block not found", ErrorCodes.ResourceNotFound, null);
                 }
-                
+
                 if (!HasStateForBlock(header))
                 {
                     return ResultWrapper<AccountProof>.Fail($"No state available for block {header.Hash}", ErrorCodes.ResourceUnavailable);

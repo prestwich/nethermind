@@ -55,6 +55,12 @@ namespace Nethermind.Cli.Modules
         {
             return NodeManager.Post<string>("eth_call", tx, blockParameter ?? "latest").Result;
         }
+        
+        [CliFunction("eth", "calls")]
+        public string Calls(long gasLimit, string blockParameter = null)
+        {
+            return NodeManager.Post<string>("eth_calls", gasLimit, blockParameter ?? "latest").Result;
+        }
 
         [CliFunction("eth", "getBlockByHash")]
         public JsValue GetBlockByHash(string hash, bool returnFullTransactionObjects)

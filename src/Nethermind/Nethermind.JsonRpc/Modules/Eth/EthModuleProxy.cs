@@ -153,10 +153,20 @@ namespace Nethermind.JsonRpc.Modules.Eth
         public async Task<ResultWrapper<Keccak>> eth_sendRawTransaction(byte[] transaction)
             => ResultWrapper<Keccak>.From(await _proxy.eth_sendRawTransaction(Rlp.Encode(transaction).Bytes));
 
-
         public ResultWrapper<string> eth_call(TransactionForRpc transactionCall, BlockParameter blockParameter = null)
         {
-            throw new NotSupportedException();
+            throw new NotImplementedException();
+        }
+
+
+        public ResultWrapper<string> eth_calls(long gasLimit, BlockParameter blockParameter = null)
+        {
+            throw new NotImplementedException();
+        }
+
+        public ResultWrapper<string> eth_calls(BlockParameter blockParameter = null)
+        {
+            throw new NotImplementedException();
         }
 
         public ResultWrapper<UInt256?> eth_estimateGas(TransactionForRpc transactionCall)
