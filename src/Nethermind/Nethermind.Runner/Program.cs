@@ -27,6 +27,7 @@ namespace Nethermind.Runner
 
         public static async Task Main(string[] args)
         {
+            Console.WriteLine("On hive-manager-tests branch");
             AppDomain.CurrentDomain.UnhandledException += (sender, eventArgs) =>
             {
                 ILogger logger = new NLogLogger("logs.txt");
