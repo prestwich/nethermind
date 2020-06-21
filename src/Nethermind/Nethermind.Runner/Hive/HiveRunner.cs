@@ -53,6 +53,7 @@ namespace Nethermind.Runner.Hive
 
         public Task Start(CancellationToken cancellationToken)
         {
+            Console.WriteLine("HiveRunner starting....");
             _logger.Info("HIVE initialization starting");
             _blockTree.NewHeadBlock += BlockTreeOnNewHeadBlock;
             var hiveConfig = _configurationProvider.GetConfig<IHiveConfig>();
@@ -104,8 +105,10 @@ namespace Nethermind.Runner.Hive
 
         private void InitializeChain(string chainFile)
         {
+            Console.WriteLine("Initializing chain....");
             if (!File.Exists(chainFile))
             {
+                Console.WriteLine($"Hive chain file does not exist: {chainFile}, skipping");
                 if (_logger.IsInfo) _logger.Info($"HIVE Chain file does not exist: {chainFile}, skipping");
                 return;
             }
@@ -135,10 +138,12 @@ namespace Nethermind.Runner.Hive
         {
             if (!Directory.Exists(blocksDir))
             {
+                Console.WriteLine($"Hive Blocks dir does not exist: {blocksDir}, skipping");
                 if (_logger.IsInfo) _logger.Info($"HIVE Blocks dir does not exist: {blocksDir}, skipping");
                 return;
             }
 
+            Console.WriteLine($"Hive loading blocks from {blocksDir}");
             if (_logger.IsInfo) _logger.Info($"HIVE Loading blocks from {blocksDir}");
             var files = Directory.GetFiles(blocksDir).OrderBy(x => x).ToArray();
             var blocks = files.Select(x => new {File = x, Block = DecodeBlock(x)}).OrderBy(x => x.Block.Header.Number).ToArray();
@@ -148,7 +153,7 @@ namespace Nethermind.Runner.Hive
                 {
                     break;
                 }
-                
+                Console.Write($"HIVE Processing block file: {block.File} - {block.Block.ToString(Block.Format.Short)}"); 
                 if (_logger.IsInfo) _logger.Info($"HIVE Processing block file: {block.File} - {block.Block.ToString(Block.Format.Short)}");
                 ProcessBlock(block.Block);
             }
@@ -167,10 +172,12 @@ namespace Nethermind.Runner.Hive
             try
             {
                 _blockTree.SuggestBlock(block);
+                Console.WriteLine($"HIVE suggested {block.ToString(Block.Format.Short)}, now best suggested header {_blockTree.BestSuggestedHeader}, head {_blockTree.Head?.Header?.ToString(BlockHeader.Format.Short)}");
                 if (_logger.IsInfo) _logger.Info($"HIVE suggested {block.ToString(Block.Format.Short)}, now best suggested header {_blockTree.BestSuggestedHeader}, head {_blockTree.Head?.Header?.ToString(BlockHeader.Format.Short)}");
             }
             catch (InvalidBlockException e)
             {
+                Console.WriteLine($"HIVE invalid block : {block.Hash}, ignoring", e);
                 _logger.Error($"HIVE Invalid block: {block.Hash}, ignoring", e);
             }
         }
