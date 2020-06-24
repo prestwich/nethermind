@@ -1,0 +1,67 @@
+name: EIP2537 Rust libs Build
+
+# on:
+#   repository_dispatch:
+#     types: rust_build
+on: push
+
+jobs:
+  rust-building:
+    name: Building rust libs for EIP2537
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macOS-latest]
+    steps:
+    - name: Cloning required repositories
+      run: |
+        https://github.com/NethermindEth/eip2537rustwrapper.git
+    - name: Building Rust libs for Windows
+      if: matrix.os == 'windows-latest'
+      run: |
+        cd D:\a\nethermind\nethermind\eip2537rustwrapper
+        cd builder
+        ./build-eip196.sh
+        ./build-eip2537.sh
+      shell: bash
+    - uses: actions/upload-artifact@v2
+      name: Uploading Windows artifact
+      if: matrix.os == 'windows-latest'
+      with:
+        name: windows_artifact
+        path: |
+          eip2537rustwrapper/libs/eth_196.dll
+          eip2537rustwrapper/libs/eth_2537.dll
+    - name: Building Rust libs for Linux
+      if: matrix.os == 'ubuntu-latest'
+      run: |
+        cd builder
+        ./build-eip196.sh
+        ./build-eip2537.sh
+    - name: Stripping Linux file
+      if: matrix.os == 'ubuntu-latest'
+      run: |
+        strip /home/runner/work/nethermind/nethermind/eip2537rustwrapper/libs/libeth_196.so
+        strip /home/runner/work/nethermind/nethermind/eip2537rustwrapper/libs/libeth_2537.so
+    - uses: actions/upload-artifact@v2
+      name: Uploading Linux artifact
+      if: matrix.os == 'ubuntu-latest'
+      with:
+        name: linux_artifact
+        path: |
+          eip2537rustwrapper/libs/libeth_196.so
+          eip2537rustwrapper/libs/libeth_2537.so
+    - name: Building Rust libs for OSX
+      if: matrix.os == 'macOS-latest'
+      run: |
+        cd builder
+        ./build-eip196.sh
+        ./build-eip2537.sh
+    - uses: actions/upload-artifact@v2
+      name: Uploading Darwin artifact
+      if: matrix.os == 'macOS-latest'
+      with:
+        name: darwin_artifact
+        path: |
+          eip2537rustwrapper/libs/libeth_196.dylib
+          eip2537rustwrapper/libs/libeth_2537.dylib
