@@ -1,9 +1,8 @@
 name: EIP2537 Rust libs Build
 
-# on:
-#   repository_dispatch:
-#     types: rust_build
-on: push
+on:
+  repository_dispatch:
+    types: rust_build
 
 jobs:
   rust-building:
