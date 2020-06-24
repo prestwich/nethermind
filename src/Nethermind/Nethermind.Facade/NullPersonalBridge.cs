@@ -63,5 +63,10 @@ namespace Nethermind.Facade
         {
             throw new NotSupportedException();
         }
+
+        public Address ImportRawKey(byte[] keyData, SecureString passphrase)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

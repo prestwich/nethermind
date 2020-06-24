@@ -71,5 +71,10 @@ namespace Nethermind.Facade
             throw new NotImplementedException();
 //            return _wallet.Sign(Keccak.Compute(message), address);
         }
+
+        public Address ImportRawKey(byte[] keyData, SecureString passphrase)
+        {
+            return _wallet.Import(keyData, passphrase);
+        }
     }
 }

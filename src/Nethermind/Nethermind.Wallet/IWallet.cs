@@ -25,7 +25,7 @@ namespace Nethermind.Wallet
 {
     public interface IWallet
     {
-        void Import(byte[] keyData, SecureString passphrase);
+        Address Import(byte[] keyData, SecureString passphrase);
         Address NewAccount(SecureString passphrase);
         bool UnlockAccount(Address address, SecureString passphrase, TimeSpan? timeSpan = null);
         bool LockAccount(Address address);

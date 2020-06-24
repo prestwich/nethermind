@@ -27,8 +27,9 @@ namespace Nethermind.Wallet
         public event EventHandler<AccountLockedEventArgs> AccountLocked;
         public event EventHandler<AccountUnlockedEventArgs> AccountUnlocked;
         
-        public void Import(byte[] keyData, SecureString passphrase)
+        public Address Import(byte[] keyData, SecureString passphrase)
         {
+            throw new NotImplementedException();
         }
 
         private NullWallet()

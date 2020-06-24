@@ -50,9 +50,11 @@ namespace Nethermind.Wallet
             }
         }
 
-        public void Import(byte[] keyData, SecureString passphrase)
+        public Address Import(byte[] keyData, SecureString passphrase)
         {
-            _keyStore.StoreKey(new PrivateKey(keyData), passphrase);
+            using PrivateKey privateKey = new PrivateKey(keyData);
+            _keyStore.StoreKey(privateKey, passphrase);
+            return privateKey.Address;
         }
 
         public Address[] GetAccounts()

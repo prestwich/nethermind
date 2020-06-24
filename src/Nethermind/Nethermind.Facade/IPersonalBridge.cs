@@ -29,5 +29,6 @@ namespace Nethermind.Facade
         bool IsUnlocked(Address address);
         Address EcRecover(byte[] message, Signature signature);
         Signature Sign(byte[] message, Address address);
+        Address ImportRawKey(byte[] keyData, SecureString passphrase);
     }
 }

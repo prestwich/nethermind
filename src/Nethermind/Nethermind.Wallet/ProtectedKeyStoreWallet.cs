@@ -49,9 +49,11 @@ namespace Nethermind.Wallet
             _unlockedAccounts = new MemoryCache(nameof(ProtectedKeyStoreWallet));
         }
 
-        public void Import(byte[] keyData, SecureString passphrase)
+        public Address Import(byte[] keyData, SecureString passphrase)
         {
-            _keyStore.StoreKey(new PrivateKey(keyData), passphrase);
+            using PrivateKey privateKey = new PrivateKey(keyData);
+            _keyStore.StoreKey(privateKey, passphrase);
+            return privateKey.Address;
         }
 
         public Address[] GetAccounts() => _keyStore.GetKeyAddresses().Addresses.ToArray();

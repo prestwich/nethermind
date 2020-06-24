@@ -29,7 +29,6 @@ namespace Nethermind.JsonRpc.Modules.Personal
 {
     public class PersonalModule : IPersonalModule
     {
-        private Encoding _messageEncoding = Encoding.UTF8;
         private readonly IPersonalBridge _bridge;
 
         public PersonalModule(IPersonalBridge bridge, ILogManager logManager)
@@ -37,15 +36,9 @@ namespace Nethermind.JsonRpc.Modules.Personal
             _bridge = bridge ?? throw new ArgumentNullException(nameof(bridge));
         }
 
-        public ResultWrapper<Address> personal_importRawKey(byte keyData, string passphrase)
-        {
-            throw new NotImplementedException();
-        }
+        public ResultWrapper<Address> personal_importRawKey(byte[] keyData, string passphrase) => ResultWrapper<Address>.Success(_bridge.ImportRawKey(keyData, passphrase.Secure()));
 
-        public ResultWrapper<Address[]> personal_listAccounts()
-        {
-            return ResultWrapper<Address[]>.Success(_bridge.ListAccounts());
-        }
+        public ResultWrapper<Address[]> personal_listAccounts() => ResultWrapper<Address[]>.Success(_bridge.ListAccounts());
 
         public ResultWrapper<bool> personal_lockAccount(Address address)
         {

@@ -15,6 +15,7 @@
 //  along with the Nethermind. If not, see <http://www.gnu.org/licenses/>.
 
 using Jint.Native;
+using Nethermind.Core;
 
 namespace Nethermind.Cli.Modules
 {
@@ -22,28 +23,19 @@ namespace Nethermind.Cli.Modules
     public class PersonalCliModule : CliModuleBase
     {
         [CliProperty("personal", "listAccounts")]
-        public JsValue ListAccounts()
-        {
-            return NodeManager.PostJint($"personal_listAccounts").Result;
-        }
+        public JsValue ListAccounts() => NodeManager.PostJint($"personal_listAccounts").Result;
 
         [CliFunction("personal", "newAccount")]
-        public string NewAccount(string password)
-        {
-            return NodeManager.Post<string>($"personal_newAccount", password).Result;
-        }
-        
+        public string NewAccount(string password) => NodeManager.Post<string>($"personal_newAccount", password).Result;
+
         [CliFunction("personal", "lockAccount")]
-        public bool LockAccount(string addressHex)
-        {
-            return NodeManager.Post<bool>($"personal_lockAccount", addressHex).Result;
-        }
-        
+        public bool LockAccount(string addressHex) => NodeManager.Post<bool>($"personal_lockAccount", addressHex).Result;
+
         [CliFunction("personal", "unlockAccount")]
-        public bool UnlockAccount(string addressHex, string password)
-        {
-            return NodeManager.Post<bool>($"personal_unlockAccount", addressHex, password).Result;
-        }
+        public bool UnlockAccount(string addressHex, string password) => NodeManager.Post<bool>($"personal_unlockAccount", addressHex, password).Result;
+
+        [CliFunction("personal", "importRawKey")]
+        public Address ImportRawKey(byte[] keyData, string passphrase) => NodeManager.Post<Address>("personal_importRawKey", keyData, passphrase).Result;
 
         public PersonalCliModule(ICliEngine engine, INodeManager nodeManager) : base(engine, nodeManager)
         {
