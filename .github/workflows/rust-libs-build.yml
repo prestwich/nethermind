@@ -35,7 +35,7 @@ jobs:
     - name: Building Rust libs for Linux
       if: matrix.os == 'ubuntu-latest'
       run: |
-        cd builder
+        cd eip2537rustwrapper/builder/
         ./build-eip196.sh
         ./build-eip2537.sh
     - name: Stripping Linux file
@@ -54,7 +54,7 @@ jobs:
     - name: Building Rust libs for OSX
       if: matrix.os == 'macOS-latest'
       run: |
-        cd builder
+        cd eip2537rustwrapper/builder
         ./build-eip196.sh
         ./build-eip2537.sh
     - uses: actions/upload-artifact@v2
