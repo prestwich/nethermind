@@ -15,7 +15,7 @@ jobs:
     steps:
     - name: Cloning required repositories
       run: |
-        https://github.com/NethermindEth/eip2537rustwrapper.git
+        git clone https://github.com/NethermindEth/eip2537rustwrapper.git
     - name: Building Rust libs for Windows
       if: matrix.os == 'windows-latest'
       run: |
